@@ -1,1 +1,24 @@
+public class CalculoPorcentajeTareas {
 
+    public static void main(String[] args) {
+        int tareasCompletadas = 7;
+        int totalTareas = 10;
+
+        // Calculamos el porcentaje
+        double porcentaje = calcularPorcentaje(tareasCompletadas, totalTareas);
+
+        // Mostramos el resultado
+        System.out.println("Tareas completadas: " + tareasCompletadas);
+        System.out.println("Total de tareas: " + totalTareas);
+        System.out.println("Porcentaje de tareas completadas: " + porcentaje + "%");
+    }
+
+    public static double calcularPorcentaje(int completadas, int total) {
+        // Evitamos la división por cero
+        if (total == 0) {
+            return 0.0; // O podrías lanzar una excepción indicando un error
+        }
+        // La lógica para calcular el porcentaje es (parte / total) * 100
+        return (double) completadas / total * 100;
+    }
+}
