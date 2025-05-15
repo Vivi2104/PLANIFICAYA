@@ -1,0 +1,167 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.geom.RoundRectangle2D;
+
+public class CalculoPorcentajeConBarra {
+
+    public static void main(String[] args) {
+        // Configuración de los datos
+        int tareasCompletadas = 7;
+        int totalTareas = 10;
+        
+        // Calcular el porcentaje
+        double porcentaje = calcularPorcentaje(tareasCompletadas, totalTareas);
+        
+        // Crear y mostrar la interfaz gráfica
+        SwingUtilities.invokeLater(() -> {
+            JFrame frame = new JFrame("Progreso de Tareas");
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            frame.setLayout(new BorderLayout());
+            
+            // Panel de información
+            JPanel infoPanel = new JPanel(new GridLayout(3, 1));
+            infoPanel.add(new JLabel("Tareas completadas: " + tareasCompletadas, SwingConstants.CENTER));
+            infoPanel.add(new JLabel("Total de tareas: " + totalTareas, SwingConstants.CENTER));
+            infoPanel.add(new JLabel("Porcentaje completado: " + String.format("%.1f%%", porcentaje), SwingConstants.CENTER));
+            
+            // Barra de progreso personalizada
+            BarraProgreso barra = new BarraProgreso();
+            barra.setMeta(100); // El 100% es nuestra meta máxima
+            barra.setProgreso((int) Math.round(porcentaje)); // Redondeamos el porcentaje
+            
+            // Configurar colores
+            barra.setColorBarra(new Color(70, 130, 180)); // Azul acero
+            barra.setColorFondo(new Color(240, 240, 240));
+            barra.setMostrarPorcentaje(true);
+            
+            // Añadir componentes al frame
+            frame.add(infoPanel, BorderLayout.NORTH);
+            frame.add(barra, BorderLayout.CENTER);
+            
+            frame.pack();
+            frame.setSize(300, 200);
+            frame.setLocationRelativeTo(null);
+            frame.setVisible(true);
+        });
+    }
+    
+    public static double calcularPorcentaje(int completadas, int total) {
+        if (total == 0) {
+            return 0.0;
+        }
+        return (double) completadas / total * 100;
+    }
+}
+
+class BarraProgreso extends JComponent {
+    private int progreso = 0;
+    private int meta = 100;
+    private Color colorFondo = new Color(230, 230, 230);
+    private Color colorBarra = new Color(76, 175, 80);
+    private Color colorBorde = new Color(200, 200, 200);
+    private Color colorTexto = Color.BLACK;
+    private boolean mostrarPorcentaje = true;
+    private int radioEsquinas = 10;
+
+    public BarraProgreso() {
+        setPreferredSize(new Dimension(200, 30));
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        Graphics2D g2d = (Graphics2D) g.create();
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+        int width = getWidth();
+        int height = getHeight();
+
+        // Dibujar fondo
+        RoundRectangle2D fondo = new RoundRectangle2D.Float(0, 0, width - 1, height - 1, radioEsquinas, radioEsquinas);
+        g2d.setColor(colorFondo);
+        g2d.fill(fondo);
+        g2d.setColor(colorBorde);
+        g2d.draw(fondo);
+
+        // Calcular ancho de la barra de progreso
+        int progresoWidth = (int) (width * ((double) progreso / meta));
+        progresoWidth = Math.max(0, Math.min(progresoWidth, width));
+
+        // Dibujar barra de progreso
+        if (progresoWidth > 0) {
+            RoundRectangle2D barra = new RoundRectangle2D.Float(0, 0, progresoWidth, height - 1, radioEsquinas, radioEsquinas);
+            g2d.setColor(colorBarra);
+            g2d.fill(barra);
+        }
+
+        // Dibujar texto de porcentaje
+        if (mostrarPorcentaje) {
+            String texto = String.format("%d%%", (int) ((double) progreso / meta * 100));
+            g2d.setColor(colorTexto);
+            FontMetrics fm = g2d.getFontMetrics();
+            int textoWidth = fm.stringWidth(texto);
+            int textoHeight = fm.getAscent();
+            g2d.drawString(texto, (width - textoWidth) / 2, (height + textoHeight) / 2 - 2);
+        }
+
+        g2d.dispose();
+    }
+
+    // Métodos getter y setter
+    public int getProgreso() {
+        return progreso;
+    }
+
+    public void setProgreso(int progreso) {
+        this.progreso = Math.max(0, Math.min(progreso, meta));
+        repaint();
+    }
+
+    public int getMeta() {
+        return meta;
+    }
+
+    public void setMeta(int meta) {
+        this.meta = Math.max(1, meta);
+        if (progreso > meta) {
+            progreso = meta;
+        }
+        repaint();
+    }
+
+    public Color getColorFondo() {
+        return colorFondo;
+    }
+
+    public void setColorFondo(Color colorFondo) {
+        this.colorFondo = colorFondo;
+        repaint();
+    }
+
+    public Color getColorBarra() {
+        return colorBarra;
+    }
+
+    public void setColorBarra(Color colorBarra) {
+        this.colorBarra = colorBarra;
+        repaint();
+    }
+
+    public boolean isMostrarPorcentaje() {
+        return mostrarPorcentaje;
+    }
+
+    public void setMostrarPorcentaje(boolean mostrarPorcentaje) {
+        this.mostrarPorcentaje = mostrarPorcentaje;
+        repaint();
+    }
+
+    public int getRadioEsquinas() {
+        return radioEsquinas;
+    }
+
+    public void setRadioEsquinas(int radioEsquinas) {
+        this.radioEsquinas = radioEsquinas;
+        repaint();
+    }
+}
