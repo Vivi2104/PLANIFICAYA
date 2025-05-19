@@ -1,0 +1,161 @@
+import javax.swing.*;
+import java.awt.*;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
+
+public class TareaPriorizada extends JPanel {
+    private String titulo;
+    private String descripcion;
+    private LocalDate fecha;
+    private boolean completada;
+    private Color colorPrioridad = new Color(255, 107, 107); // Rojo coral para prioridad
+
+    public TareaPriorizada(String titulo, String descripcion, LocalDate fecha) {
+        this.titulo = titulo;
+        this.descripcion = descripcion;
+        this.fecha = fecha;
+        this.completada = false;
+        
+        setLayout(new BorderLayout(10, 10));
+        setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
+        setBackground(Color.WHITE);
+        setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(colorPrioridad, 3),
+            BorderFactory.createEmptyBorder(10, 10, 10, 10)
+        ));
+        
+        initComponents();
+    }
+
+    private void initComponents() {
+        // Panel principal
+        JPanel contentPanel = new JPanel();
+        contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
+        contentPanel.setBackground(Color.WHITE);
+
+        // Etiqueta de "PRIORITARIA"
+        JLabel prioridadLabel = new JLabel("TAREA PRIORITARIA PARA HOY");
+        prioridadLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        prioridadLabel.setForeground(colorPrioridad);
+        prioridadLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        // Título de la tarea
+        JLabel tituloLabel = new JLabel(titulo);
+        tituloLabel.setFont(new Font("Segoe UI", Font.BOLD, 18));
+        tituloLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        // Descripción
+        JTextArea descripcionArea = new JTextArea(descripcion);
+        descripcionArea.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        descripcionArea.setLineWrap(true);
+        descripcionArea.setWrapStyleWord(true);
+        descripcionArea.setEditable(false);
+        descripcionArea.setBackground(Color.WHITE);
+        descripcionArea.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        // Fecha
+        JLabel fechaLabel = new JLabel("Fecha: " + fecha.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+        fechaLabel.setFont(new Font("Segoe UI", Font.ITALIC, 12));
+        fechaLabel.setForeground(Color.GRAY);
+        fechaLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        // Checkbox de completado
+        JCheckBox completadaCheck = new JCheckBox("Marcar como completada", completada);
+        completadaCheck.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        completadaCheck.setAlignmentX(Component.LEFT_ALIGNMENT);
+        completadaCheck.addActionListener(e -> {
+            completada = completadaCheck.isSelected();
+            updateAppearance();
+        });
+
+        // Añadir componentes al panel
+        contentPanel.add(prioridadLabel);
+        contentPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+        contentPanel.add(tituloLabel);
+        contentPanel.add(Box.createRigidArea(new Dimension(0, 5)));
+        contentPanel.add(descripcionArea);
+        contentPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+        contentPanel.add(fechaLabel);
+        contentPanel.add(Box.createRigidArea(new Dimension(0, 15)));
+        contentPanel.add(completadaCheck);
+
+        add(contentPanel, BorderLayout.CENTER);
+
+        // Botón de acción
+        JButton accionButton = new JButton("Ir a la tarea");
+        accionButton.setBackground(colorPrioridad);
+        accionButton.setForeground(Color.WHITE);
+        accionButton.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        accionButton.setFocusPainted(false);
+        add(accionButton, BorderLayout.SOUTH);
+    }
+
+    private void updateAppearance() {
+        if (completada) {
+            setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(Color.GRAY, 3),
+                BorderFactory.createEmptyBorder(10, 10, 10, 10)
+            ));
+            colorPrioridad = Color.GRAY;
+        } else {
+            setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(255, 107, 107), 3),
+                BorderFactory.createEmptyBorder(10, 10, 10, 10)
+            ));
+            colorPrioridad = new Color(255, 107, 107);
+        }
+        repaint();
+    }
+
+    // Métodos getter y setter
+    public String getTitulo() {
+        return titulo;
+    }
+
+    public void setTitulo(String titulo) {
+        this.titulo = titulo;
+    }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+
+    public LocalDate getFecha() {
+        return fecha;
+    }
+
+    public void setFecha(LocalDate fecha) {
+        this.fecha = fecha;
+    }
+
+    public boolean isCompletada() {
+        return completada;
+    }
+
+    public void setCompletada(boolean completada) {
+        this.completada = completada;
+        updateAppearance();
+    }
+
+    // Método para probar el panel
+    public static void main(String[] args) {
+        JFrame frame = new JFrame("Tarea Priorizada");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(400, 300);
+
+        TareaPriorizada tareaPanel = new TareaPriorizada(
+            "Finalizar el prototipo de UI",
+            "Completar el diseño de la interfaz de usuario para la aplicación de gestión de tareas, incluyendo los componentes principales y las interacciones básicas.",
+            LocalDate.now()
+        );
+
+        frame.add(tareaPanel);
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
+    }
+}
